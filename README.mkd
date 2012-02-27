@@ -1,0 +1,54 @@
+# tasked -- Background task state machines on top of CouchDB.
+
+## Install
+
+<pre>
+  npm install tasked
+</pre>
+
+Or from source:
+
+<pre>
+  git clone git://github.com/mikeal/tasked.git 
+  cd tasked
+  npm link
+</pre>
+
+## Usage
+
+```javascript
+var tasked = require('tasked')
+  , request = require('request')
+  , t = tasked('http://me.iriscouch.com:5984/tasks')
+  ;
+
+t.on('mytype', function (task) {
+  task.info // Whole doc
+  request(task.info.url, task.promise('http-request', function (e, r) {
+    if (r.statusCode === 200) {
+      // do something
+    }
+  }))
+})
+```
+
+To create a new task to be processed you must write a document in to this CouchDB with your own custom `type` and a `state` property that is set to `"new"`.
+
+```javascript
+request.post(http://me.iriscouch.com:5984/tasks, {json:
+  { type: 'mytype',
+  , state: 'new'
+  , url: 'http://www.google.com'
+  }
+})
+```
+
+tasked will set the document's state to `"processing"` and emit an event for that type. While task promises are open it remain in that state. When all the promises are resolved (succeeded or failed) the document's state will be set to `"complete"` and a `results` and `errors` property will be set with an object of all the success and failures from the promises.
+
+### task.promise(name, [cb])
+
+This method creates a promise of the given name. When complete an event will be emitted on the task of the given name. An option callback will be added a handler for that event.
+
+You cannot give two promises the same name on the same task object.
+
+A promise that is returned is a single function that matches the standard node convention of `function (error, success) {}` so it should be usable in any function that follows standard node.js patterns.
