@@ -1,7 +1,7 @@
 { "name" : "tasked"
 , "description" : "Background task state machines on top of CouchDB."
 , "tags" : ["http", "simple", "util", "utility", "couchdb", "tasks"]
-, "version" : "0.1.1"
+, "version" : "0.2.0"
 , "author" : "Mikeal Rogers <mikeal.rogers@gmail.com>"
 , "repository" :
   { "type" : "git"
