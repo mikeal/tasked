@@ -26,7 +26,8 @@ tasked.provision(dburl, function (e) {
     counter++
     if (counter === 100) {
       console.log('All tests passed.')
-      process.exit()
+      t1.close()
+      t2.close()
     }
   }
   
